@@ -1,0 +1,63 @@
+========================================
+
+Downloading Ubuntu vagrant box
+----------------------------------
+vagrant box add bento/ubuntu-14.04 --provider=virtualbox
+
+========================================
+
+Bring up an Ubuntu instance
+------------------------------
+vagrant init bento/ubuntu-14.04
+vagrant up
+
+========================================
+Local mode
+========================================
+ChefDK
+---------------
+sudo apt-get update
+sudo apt-get -y install curl
+curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chefdk -c stable -v 2.5.3
+
+=========================================
+
+chef-client
+----------------
+chef-client --local-mode #file_name
+
+=========================================
+
+Cookbooks
+----------------
+chef generate cookbook cookbooks/#cookbook_name
+chef generate template cookbooks/#cookbook_name #temp_name
+sudo chef-client --local-mode --runlist 'recipe[learn_chef_apache2]'
+=========================================
+Hosted chef
+=========================================
+
+Cookbooks(under ~/learn-chef/cookbooks)
+------------------------------------------
+git clone https://github.com/learn-chef/learn_chef_apache2.git
+
+Upload
+------------
+knife cookbook upload #cookbook_name
+
+Connect
+------------
+ssh -i C:/Users/KH9395/chef-repo/.vagrant/machines/default/virtualbox/private_key -l vagrant -p 2222 localhost
+knife bootstrap localhost --ssh-port 2222 --ssh-user vagrant --sudo --identity-file C:/Users/KH9395/chef-repo/.vagrant/machines/default/virtualbox/private_key --node-name practice --run-list 'recipe[learn_chef_apache2]'
+knife ssh localhost --ssh-port 2222 'sudo chef-client' --ssh-user vagrant --ssh-identity-file C:/Users/KH9395/chef-repo/.vagrant/machines/default/virtualbox/private_key --manual-list
+
+Berks (~/learn-chef/Berksfile)
+----------
+berks install
+berks upload
+
+Role (~/learn-chef/roles)
+---------
+knife role from file roles/web.json
+knife node run_list set node1-ubuntu "role[web]"
+knife status 'role:web' --run-list
